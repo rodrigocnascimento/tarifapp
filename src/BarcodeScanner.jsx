@@ -3,12 +3,17 @@ import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 
 export default function BarcodeScanner() {
   const videoRef = useRef(null);
+  const codeReaderRef = useRef(new BrowserMultiFormatReader());
   const [result, setResult] = useState('');
   const [status, setStatus] = useState('Escaneando...');
 
-  useEffect(() => {
-    const codeReader = new BrowserMultiFormatReader();
-    let active = true;
+  const startScanning = async () => {
+    setIsScanning(true);
+    const codeReader = codeReaderRef.current;
+    try {
+      const videoInputDevices = await codeReader.listVideoInputDevices();
+      const firstDeviceId = videoInputDevices[0]?.deviceId;
+      if (!firstDeviceId) return;
 
     codeReader
       .listVideoInputDevices()
@@ -40,9 +45,9 @@ export default function BarcodeScanner() {
         setStatus('Erro ao acessar câmera');
       });
 
+  useEffect(() => {
     return () => {
-      active = false;
-      codeReader.reset();
+      codeReaderRef.current.reset();
     };
   }, []);
 
@@ -61,6 +66,7 @@ export default function BarcodeScanner() {
         <p>Posicione o código de barras dentro da moldura</p>
       </div>
       <p className="status">{status}</p>
+
       {result && <p>Result: {result}</p>}
       <style>{`
         .video-container {
