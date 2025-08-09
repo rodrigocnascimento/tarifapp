@@ -22,13 +22,14 @@ export default function BarcodeScanner() {
   const [result, setResult] = useState('');
   const [torchEnabled, setTorchEnabled] = useState(false);
   const [torchSupported, setTorchSupported] = useState(false);
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     setTorchSupported(
       !!navigator.mediaDevices?.getSupportedConstraints?.().torch
     );
 
-    const codeReader = new BrowserMultiFormatReader();
+    const codeReader = codeReaderRef.current;
     let active = true;
 
     codeReader
@@ -61,9 +62,9 @@ export default function BarcodeScanner() {
         setStatus('Erro ao acessar câmera');
       });
 
-  useEffect(() => {
     return () => {
-      codeReaderRef.current.reset();
+      active = false;
+      codeReader.reset();
     };
   }, []);
 
@@ -96,6 +97,7 @@ export default function BarcodeScanner() {
         </button>
       )}
       {result && <p>Result: {result}</p>}
+      {status && <p className="status">{status}</p>}
       <style>{`
         .video-container {
           position: relative;
