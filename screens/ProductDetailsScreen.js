@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Button } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import ProductCard from '../components/ProductCard';
 import useProductDetails from '../hooks/useProductDetails';
 
@@ -7,19 +7,10 @@ export default function ProductDetailsScreen({ route, navigation }) {
   const { barcode } = route.params;
   const { product, suggestions, loading, error } = useProductDetails(barcode);
 
-  if (loading) {
+  if (!product) {
     return (
-      <View style={styles.center}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (error || !product) {
-    return (
-      <View style={styles.center}>
-        <Text>Produto não encontrado</Text>
-        <Button title="Voltar ao scanner" onPress={() => navigation.navigate('Scanner')} />
       </View>
     );
   }
@@ -67,5 +58,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
