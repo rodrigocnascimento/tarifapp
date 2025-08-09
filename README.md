@@ -1,8 +1,9 @@
 # TarifApp
 
-Aplicativo React Native que realiza a leitura de códigos de barras e exibe detalhes do produto, com foco no país de origem. Também apresenta sugestões de outros produtos relacionados.
+Aplicação web em React para leitura de códigos de barras utilizando a biblioteca ZXing via WebAssembly.
 
 ## Scripts
 
-- `npm start` - inicia o aplicativo (expo).
+- `npm run dev` - inicia o servidor de desenvolvimento (Vite).
+- `npm run build` - cria a versão de produção.
 - `npm test` - executa testes (nenhum configurado).
