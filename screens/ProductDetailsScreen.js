@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import ProductCard from '../components/ProductCard';
 import useProductDetails from '../hooks/useProductDetails';
 
@@ -8,7 +8,11 @@ export default function ProductDetailsScreen({ route, navigation }) {
   const { product, suggestions } = useProductDetails(barcode);
 
   if (!product) {
-    return <Text>Carregando...</Text>;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (
@@ -48,5 +52,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
