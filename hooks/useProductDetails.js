@@ -4,7 +4,7 @@ import { getProduct, getProductsByCategory } from '../services/openFoodFacts';
 export default function useProductDetails(barcode) {
   const [product, setProduct] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -20,10 +20,15 @@ export default function useProductDetails(barcode) {
         if (category) {
           const items = await getProductsByCategory(category, 5);
           if (isActive) setSuggestions(items);
+        } else {
+          if (isActive) setSuggestions([]);
         }
       } catch (e) {
-        if (isActive) setError(e);
+        if (!isActive) return;
         console.warn(e);
+        setError(e);
+        setProduct(null);
+        setSuggestions([]);
       } finally {
         if (isActive) setLoading(false);
       }
