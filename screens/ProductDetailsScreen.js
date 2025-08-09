@@ -5,7 +5,7 @@ import useProductDetails from '../hooks/useProductDetails';
 
 export default function ProductDetailsScreen({ route, navigation }) {
   const { barcode } = route.params;
-  const { product, suggestions } = useProductDetails(barcode);
+  const { product, suggestions, loading, error } = useProductDetails(barcode);
 
   if (!product) {
     return (
@@ -37,6 +37,12 @@ export default function ProductDetailsScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 16,
   },
   name: {
