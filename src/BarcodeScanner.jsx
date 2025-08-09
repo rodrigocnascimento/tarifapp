@@ -3,39 +3,45 @@ import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 
 export default function BarcodeScanner() {
   const videoRef = useRef(null);
+  const codeReaderRef = useRef(new BrowserMultiFormatReader());
   const [result, setResult] = useState('');
+  const [isScanning, setIsScanning] = useState(false);
+
+  const startScanning = async () => {
+    setIsScanning(true);
+    const codeReader = codeReaderRef.current;
+    try {
+      const videoInputDevices = await codeReader.listVideoInputDevices();
+      const firstDeviceId = videoInputDevices[0]?.deviceId;
+      if (!firstDeviceId) return;
+
+      const res = await codeReader.decodeOnceFromVideoDevice(
+        firstDeviceId,
+        videoRef.current
+      );
+      setResult(res.getText());
+    } catch (err) {
+      if (err && !(err instanceof NotFoundException)) {
+        console.error(err);
+      }
+    } finally {
+      codeReader.reset();
+      setIsScanning(false);
+    }
+  };
 
   useEffect(() => {
-    const codeReader = new BrowserMultiFormatReader();
-    let active = true;
-
-    codeReader
-      .listVideoInputDevices()
-      .then((videoInputDevices) => {
-        const firstDeviceId = videoInputDevices[0]?.deviceId;
-        if (!firstDeviceId) return;
-        codeReader.decodeFromVideoDevice(firstDeviceId, videoRef.current, (res, err) => {
-          if (!active) return;
-          if (res) {
-            setResult(res.getText());
-            codeReader.reset();
-          }
-          if (err && !(err instanceof NotFoundException)) {
-            console.error(err);
-          }
-        });
-      })
-      .catch((err) => console.error(err));
-
     return () => {
-      active = false;
-      codeReader.reset();
+      codeReaderRef.current.reset();
     };
   }, []);
 
   return (
     <div>
       <video ref={videoRef} style={{ width: '100%' }} />
+      <button onClick={startScanning} disabled={isScanning}>
+        Escanear
+      </button>
       {result && <p>Result: {result}</p>}
     </div>
   );
